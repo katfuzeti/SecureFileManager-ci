@@ -1,0 +1,8 @@
+# Скрипты выполняются в Linux-контейнерах: CRLF из Windows сломал бы shebang и sh.
+* text=auto eol=lf
+*.sh  text eol=lf
+*.py  text eol=lf
+*.yml text eol=lf
+*.cs  text eol=lf
+Dockerfile text eol=lf
+*.Dockerfile text eol=lf
