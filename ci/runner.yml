@@ -1,0 +1,29 @@
+# Настройки локального раннера: аналог config.toml у gitlab-runner.
+# Здесь задаётся то, что относится к машине, а не к проекту: лимиты,
+# доступ к Docker-сокету, какие секреты и каким джобам выдавать.
+
+pipeline_file: .gitlab-ci.yml
+state_dir: .local-ci            # прогоны, артефакты, логи и кэш (в .gitignore)
+project_mount: /builds/securefm # куда монтируется рабочая копия внутри контейнера
+keep_runs: 5                    # сколько последних прогонов хранить (срок жизни артефактов)
+default_timeout: 30m
+
+limits:                         # ограничения ресурсов каждого контейнера
+  cpus: "2"
+  memory: 4g
+  pids: 4096
+
+# Джобы, которым монтируется /var/run/docker.sock. Сокет даёт полный контроль
+# над Docker хоста, поэтому список минимальный: только локальное развёртывание.
+docker_socket_jobs:
+  - deploy_local
+
+# Секреты: имя -> джобы, которые его получают. Значение берётся из переменной
+# окружения раннера, а если её нет — из файла secrets_file (права 600, в .gitignore).
+secrets_file: ci/secrets.env
+secrets:
+  SECUREFM_TEST_PASSWORD: [test]
+
+# Вспомогательные образы, которые раннер собирает сам (пересобирает при изменении Dockerfile).
+local_images:
+  securefm-ci/dotnet-sdk:8.0: ci/images/dotnet-ci.Dockerfile
